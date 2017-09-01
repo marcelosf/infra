@@ -17,4 +17,19 @@ class Local extends Model
 
     protected $table = 'local';
 
+
+    public function racks()
+    {
+
+        return $this->hasMany('Infra\Model\Infra\Rack');
+
+    }
+
+    public function patchs()
+    {
+
+        return $this->hasMany('Infra\Model\Infra\Patch');
+
+    }
+
 }

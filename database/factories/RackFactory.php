@@ -12,7 +12,7 @@ $factory->define(\Infra\Model\Infra\Rack::class, function (Faker $faker) {
     return [
 
         'name' => $faker->randomLetter,
-        'local' => $faker->numberBetween($min_local, $max_local),
+        'local_id' => $faker->numberBetween($min_local, $max_local),
         'u' => 48
 
     ];

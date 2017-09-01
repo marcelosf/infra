@@ -10,7 +10,7 @@ class Rack extends Model
     protected $fillable = [
 
         'name',
-        'local',
+        'local_id',
         'u'
 
     ];
@@ -21,7 +21,21 @@ class Rack extends Model
     public function local()
     {
 
-        return $this->hasOne('Infra\Model\Local\Local');
+        return $this->belongsTo('Infra\Model\Local\Local');
+
+    }
+
+    public function patchs()
+    {
+
+        return $this->hasMany('Infra\Model\Infra\Patch');
+
+    }
+
+    public function voicePanels()
+    {
+
+        return $this->hasMany('Infra\Model\Infra\VoicePanel');
 
     }
 
