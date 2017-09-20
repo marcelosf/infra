@@ -6,7 +6,11 @@
 
         <div class="nav-wrapper">
 
-            <a href="#" class="brand-logo">Infra</a>
+            <div class="container">
+
+                <a href="#" class="brand-logo">Infra</a>
+
+            </div>
 
         </div>
 
