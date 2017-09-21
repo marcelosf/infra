@@ -36,10 +36,17 @@ class Patch extends Model
 
     }
 
-    public function connection()
+    public function switchPort()
     {
 
-        return $this->hasOne('Infra\Model\Infra\Connection', 'patch_port_id');
+        return $this->hasOne('Infra\Model\Devices\SwitchPorts', 'ppanel_id');
+
+    }
+
+    public function voicePort()
+    {
+
+        return $this->hasMany('Infra\Model\Infra\VoicePort', 'ppanel_id');
 
     }
 
