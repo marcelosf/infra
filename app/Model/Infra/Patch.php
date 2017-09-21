@@ -36,4 +36,11 @@ class Patch extends Model
 
     }
 
+    public function connection()
+    {
+
+        return $this->hasOne('Infra\Model\Infra\Connection', 'patch_port_id');
+
+    }
+
 }
