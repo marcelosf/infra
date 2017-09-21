@@ -28,8 +28,6 @@ class DatabaseSeeder extends Seeder
 
         $this->call(VoicePortSeeder::class);
 
-        $this->call(ConnectionSeeder::class);
-
         $this->call(PhoneSeeder::class);
 
     }

@@ -13,7 +13,7 @@ class PatchTableSeeder extends Seeder
     public function run()
     {
 
-        factory(Patch::class, 20)->create();
+        factory(Patch::class, 200)->create();
 
     }
 }
