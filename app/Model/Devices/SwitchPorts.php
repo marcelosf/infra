@@ -28,4 +28,10 @@ class SwitchPorts extends Model
 
     }
 
+    public function patch() {
+
+        return $this->belongsTo('Infra\Model\Infra\Patch');
+
+    }
+
 }
