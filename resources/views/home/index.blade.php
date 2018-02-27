@@ -2,19 +2,23 @@
 
 @section('body')
 
-    <nav>
+    <div class="navbar-fixed">
 
-        <div class="nav-wrapper">
+        <nav>
 
-            <div class="container">
+            <div class="nav-wrapper">
 
-                <a href="#" class="brand-logo">Infra</a>
+                <div class="container">
+
+                    <a href="#" class="brand-logo">Infra IAG</a>
+
+                </div>
 
             </div>
 
-        </div>
+        </nav>
 
-    </nav>
+    </div>
 
     <div class="container">
 
@@ -33,8 +37,7 @@
                     <th>Ip</th>
                     <th>Switch</th>
                     <th>Porta Switch</th>
-                    <th>Wifi</th>
-                    <th>Camera</th>
+                    <th>Serviço</th>
                     <th>VLan</th>
                     <th>Sala Rack</th>
 
@@ -57,8 +60,7 @@
                         <td>Ip</td>
                         <td>Switch</td>
                         <td>Porta Switch</td>
-                        <td>Wifi</td>
-                        <td>Camera</td>
+                        <td>Serviço - wifi ou camera</td>
                         <td>VLan</td>
                         <td>Sala Rack</td>
 

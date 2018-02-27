@@ -17,6 +17,7 @@ mix.sass('resources/assets/sass/app.scss', 'public/css');
 
 mix.browserSync({
 
-    proxy: "192.168.10.10:8000"
+    proxy: 'workspace:8000',
+    open: false
 
 });
