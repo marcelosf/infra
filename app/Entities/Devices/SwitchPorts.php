@@ -29,7 +29,7 @@ class SwitchPorts extends Model implements Transformable
     public function dswitch()
     {
 
-        return $this->belongsTo('Infra\Entities\Devices\Switches');
+        return $this->belongsTo('Infra\Entities\Devices\Switches', 'switch_id');
 
     }
 

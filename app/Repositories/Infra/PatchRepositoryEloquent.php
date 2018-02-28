@@ -4,7 +4,7 @@ namespace Infra\Repositories\Infra;
 
 use Prettus\Repository\Eloquent\BaseRepository;
 use Prettus\Repository\Criteria\RequestCriteria;
-use Infra\Repositories\Infra\PatchRepository;
+use Infra\Presenters\PatchPresenter;
 use Infra\Entities\Infra\Patch;
 use Infra\Validators\Infra\PatchValidator;
 
@@ -22,7 +22,9 @@ class PatchRepositoryEloquent extends BaseRepository implements PatchRepository
      */
     public function model()
     {
+
         return Patch::class;
+
     }
 
     /**
@@ -34,6 +36,14 @@ class PatchRepositoryEloquent extends BaseRepository implements PatchRepository
     {
 
         return PatchValidator::class;
+
+    }
+
+    public function presenter()
+    {
+
+        return PatchPresenter::class;
+
     }
 
 
@@ -42,7 +52,9 @@ class PatchRepositoryEloquent extends BaseRepository implements PatchRepository
      */
     public function boot()
     {
+
         $this->pushCriteria(app(RequestCriteria::class));
+
     }
     
 }

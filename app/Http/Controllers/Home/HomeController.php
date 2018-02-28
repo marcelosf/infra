@@ -2,28 +2,40 @@
 
 namespace Infra\Http\Controllers\Home;
 
-use Illuminate\Http\Request;
 use Infra\Http\Controllers\Controller;
-use Infra\Model\Infra\Patch;
+use Infra\Repositories\Infra\PatchRepositoryEloquent;
+use Infra\Validators\Infra\PatchValidator;
+use Prettus\Repository\Criteria\RequestCriteria;
+
 
 class HomeController extends Controller
 {
 
-    protected $patch;
+    protected $repository;
 
-    public function __construct(Patch $patch)
+
+    protected $validator;
+
+
+    public function __construct(PatchRepositoryEloquent $repository, PatchValidator $validator)
     {
 
-        $this->patch = $patch;
+        $this->repository = $repository;
+
+        $this->validator = $validator;
 
     }
 
 
     public function index() {
 
-        $patches = $this->patch->with('rack', 'local')->get()->all();
+        $this->repository->pushCriteria(app(RequestCriteria::class));
 
-        return view('home.index', compact('patches'));
+        $patches = $this->repository->paginate(14);
+
+        $pagination = $patches['meta']['pagination'];
+
+        return view('home.index', compact('patches', 'pagination'));
 
     }
 

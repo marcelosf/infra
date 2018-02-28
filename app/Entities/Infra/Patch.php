@@ -2,7 +2,7 @@
 
 namespace Infra\Entities\Infra;
 
-use Illuminate\Database\Eloquent\Entities;
+use Illuminate\Database\Eloquent\Model;
 use Prettus\Repository\Contracts\Transformable;
 use Prettus\Repository\Traits\TransformableTrait;
 
@@ -17,6 +17,7 @@ class Patch extends Model implements Transformable
         'reference',
         'number',
         'port',
+        'resource',
         'rack_id',
         'local_id'
 

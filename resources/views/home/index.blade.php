@@ -20,11 +20,13 @@
 
     </div>
 
-    <div class="container">
+    <div class="row section">
 
-        <table class="bordered highlight">
+        <div class="col offset-s1 offset-m1 offset-l1 s10 m10 l10">
 
-            <thead>
+            <table class="bordered highlight">
+
+                <thead>
 
                 <tr>
 
@@ -43,35 +45,110 @@
 
                 </tr>
 
-            </thead>
+                </thead>
 
-            <tbody>
+                <tbody>
 
-                @foreach($patches as $p)
+                @foreach($patches['data'] as $p)
 
                     <tr>
 
-                        <td>{{ $p->local->build }}</td>
-                        <td>{{ $p->local->floor }}</td>
-                        <td>{{ $p->local->local }}</td>
-                        <td>{{ $p->numero }}</td>
-                        <td>A</td>
-                        <td>Hostname</td>
-                        <td>Ip</td>
-                        <td>Switch</td>
-                        <td>Porta Switch</td>
-                        <td>Serviço - wifi ou camera</td>
-                        <td>VLan</td>
-                        <td>Sala Rack</td>
+                        <td>{{ $p['build'] }}</td>
+                        <td>{{ $p['floor'] }}</td>
+                        <td>{{ $p['room'] }}</td>
+                        <td>{{ $p['patchPort'] }}</td>
+                        <td>{{ $p['status'] }}</td>
+                        <td>{{ $p['switchHostname'] }}</td>
+                        <td>{{ $p['switchIP'] }}</td>
+                        <td>{{ $p['switchIdentification'] }}</td>
+                        <td>{{ $p['switchPort'] }}</td>
+                        <td>{{ $p['service'] }}</td>
+                        <td>{{ $p['switchVlan'] }}</td>
+                        <td>{{ $p['rackLocation'] }}</td>
 
                     </tr>
 
                 @endforeach
 
-            </tbody>
+                </tbody>
 
-        </table>
+            </table>
+
+
+            <ul class="pagination center-align">
+
+                @if(array_key_exists('previous', $pagination['links']))
+
+                    <li class="waves-effect">
+
+                        <a href="{{ $pagination['links']['previous'] }}">
+
+                            <i class="material-icons">chevron_left</i>
+
+                        </a>
+
+                    </li>
+
+                @else
+
+                    <li class="disabled">
+
+                        <a href="#!">
+
+                            <i class="material-icons">chevron_left</i>
+
+                        </a>
+
+                    </li>
+
+                @endif
+
+                @for($patch = 1; $patch <= $pagination['total_pages']; $patch ++)
+
+                    <li class="{{ $pagination['current_page'] === $patch ? 'active':'waves-effect' }}">
+
+                        <a href="?page={{ $patch }}">
+
+                            {{ $patch }}
+
+                        </a>
+
+                    </li>
+
+                @endfor
+
+                @if(array_key_exists('next', $pagination['links']))
+
+                    <li class="waves-effect">
+
+                        <a href="{{ $pagination['links']['next'] }}">
+
+                            <i class="material-icons">chevron_right</i>
+
+                        </a>
+
+                    </li>
+
+                @else
+
+                     <li class="disabled">
+
+                         <a href="#!">
+
+                             <i class="material-icons">chevron_right</i>
+
+                         </a>
+
+                     </li>
+
+                @endif
+
+            </ul>
+
+        </div>
+
 
     </div>
+
 
 @endsection()

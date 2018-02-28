@@ -2,8 +2,6 @@
 
 namespace Infra\Http\Controllers\Local;
 
-use Illuminate\Http\Request;
-
 use Infra\Http\Requests;
 use Prettus\Validator\Contracts\ValidatorInterface;
 use Prettus\Validator\Exceptions\ValidatorException;
@@ -12,40 +10,23 @@ use Infra\Http\Requests\LocalUpdateRequest;
 use Infra\Repositories\Local\LocalRepository;
 use Infra\Validators\Local\LocalValidator;
 
-/**
- * Class LocalsController.
- *
- * @package namespace Infra\Http\Controllers\Local;
- */
+
 class LocalsController extends Controller
 {
-    /**
-     * @var LocalRepository
-     */
+
     protected $repository;
 
-    /**
-     * @var LocalValidator
-     */
+
     protected $validator;
 
-    /**
-     * LocalsController constructor.
-     *
-     * @param LocalRepository $repository
-     * @param LocalValidator $validator
-     */
+
     public function __construct(LocalRepository $repository, LocalValidator $validator)
     {
         $this->repository = $repository;
         $this->validator  = $validator;
     }
 
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+
     public function index()
     {
         $this->repository->pushCriteria(app('Prettus\Repository\Criteria\RequestCriteria'));
@@ -61,15 +42,7 @@ class LocalsController extends Controller
         return view('locals.index', compact('locals'));
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  LocalCreateRequest $request
-     *
-     * @return \Illuminate\Http\Response
-     *
-     * @throws \Prettus\Validator\Exceptions\ValidatorException
-     */
+
     public function store(LocalCreateRequest $request)
     {
         try {
@@ -101,13 +74,7 @@ class LocalsController extends Controller
         }
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int $id
-     *
-     * @return \Illuminate\Http\Response
-     */
+
     public function show($id)
     {
         $local = $this->repository->find($id);
@@ -122,13 +89,7 @@ class LocalsController extends Controller
         return view('locals.show', compact('local'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int $id
-     *
-     * @return \Illuminate\Http\Response
-     */
+
     public function edit($id)
     {
         $local = $this->repository->find($id);
@@ -136,16 +97,7 @@ class LocalsController extends Controller
         return view('locals.edit', compact('local'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  LocalUpdateRequest $request
-     * @param  string            $id
-     *
-     * @return Response
-     *
-     * @throws \Prettus\Validator\Exceptions\ValidatorException
-     */
+
     public function update(LocalUpdateRequest $request, $id)
     {
         try {
@@ -180,13 +132,6 @@ class LocalsController extends Controller
     }
 
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int $id
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function destroy($id)
     {
         $deleted = $this->repository->delete($id);
