@@ -29,6 +29,7 @@ class CreatePatchListsTable extends Migration
 	 */
 	public function down()
 	{
+
 		Schema::drop('patch_lists');
 	}
 }

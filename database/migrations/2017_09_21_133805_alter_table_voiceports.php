@@ -31,11 +31,15 @@ class AlterTableVoiceports extends Migration
     public function down()
     {
 
-        Schema::table('voiceports', function(Blueprint $table) {
+        if (Schema::hasColumn('voiceports', 'ppanel_id')) {
 
-            $table->dropForeign('ppanel_id');
+            Schema::table('voiceports', function(Blueprint $table) {
 
-        });
+                $table->dropForeign('ppanel_id');
+
+            });
+
+        }
 
     }
 }

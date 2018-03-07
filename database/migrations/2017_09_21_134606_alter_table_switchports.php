@@ -31,11 +31,15 @@ class AlterTableSwitchports extends Migration
     public function down()
     {
 
-        Schema::table('switchports', function (Blueprint $table) {
+        if (Schema::hasColumn('switchports', 'ppanel_id')) {
 
-            $table->dropForeign('ppanel_id');
+            Schema::table('switchports', function (Blueprint $table) {
 
-        });
+                $table->dropForeign('ppanel_id');
+
+            });
+
+        }
 
     }
 }
