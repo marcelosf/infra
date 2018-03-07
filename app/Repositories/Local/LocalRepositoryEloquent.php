@@ -8,28 +8,24 @@ use Infra\Repositories\Local\LocalRepository;
 use Infra\Entities\Local\Local;
 use Infra\Validators\Local\LocalValidator;
 
-/**
- * Class LocalRepositoryEloquent.
- *
- * @package namespace Infra\Repositories\Local;
- */
+
 class LocalRepositoryEloquent extends BaseRepository implements LocalRepository
 {
-    /**
-     * Specify Model class name
-     *
-     * @return string
-     */
+
+    protected $fieldSearchable = [
+
+        'build',
+        'floor',
+        'local',
+
+    ];
+
     public function model()
     {
         return Local::class;
     }
 
-    /**
-    * Specify Validator class name
-    *
-    * @return mixed
-    */
+
     public function validator()
     {
 
@@ -37,12 +33,11 @@ class LocalRepositoryEloquent extends BaseRepository implements LocalRepository
     }
 
 
-    /**
-     * Boot up the repository, pushing criteria
-     */
     public function boot()
     {
+
         $this->pushCriteria(app(RequestCriteria::class));
+
     }
     
 }

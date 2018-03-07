@@ -32,6 +32,7 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(\Infra\Repositories\Infra\VoicePortRepository::class, \Infra\Repositories\Infra\VoicePortRepositoryEloquent::class);
         $this->app->bind(\Infra\Repositories\Devices\SwitchPortsRepository::class, \Infra\Repositories\Devices\SwitchPortsRepositoryEloquent::class);
         $this->app->bind(\Infra\Repositories\Devices\SwitchesRepository::class, \Infra\Repositories\Devices\SwitchesRepositoryEloquent::class);
+        $this->app->bind(\Infra\Repositories\PatchListRepository::class, \Infra\Repositories\PatchListRepositoryEloquent::class);
         //:end-bindings:
     }
 }

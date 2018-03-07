@@ -15,6 +15,13 @@ use Infra\Validators\Infra\PatchValidator;
  */
 class PatchRepositoryEloquent extends BaseRepository implements PatchRepository
 {
+
+    protected $fieldSearchable = [
+
+
+
+    ];
+
     /**
      * Specify Model class name
      *

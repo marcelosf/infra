@@ -10444,16 +10444,14 @@ module.exports = __webpack_require__(8);
 
 /***/ }),
 /* 2 */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
-
-/**
- * First, we will load all of this project's Javascript utilities and other
- * dependencies. Then, we will be ready to develop a robust and powerful
- * application frontend using useful Laravel and JavaScript libraries.
- */
-
+"use strict";
 __webpack_require__(3);
+
+__webpack_require__(24);
+
+__webpack_require__(25);
 
 /***/ }),
 /* 3 */
@@ -23204,6 +23202,101 @@ if (true) {
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 9 */,
+/* 10 */,
+/* 11 */,
+/* 12 */,
+/* 13 */,
+/* 14 */,
+/* 15 */,
+/* 16 */,
+/* 17 */,
+/* 18 */,
+/* 19 */,
+/* 20 */,
+/* 21 */,
+/* 22 */,
+/* 23 */,
+/* 24 */
+/***/ (function(module, exports) {
+
+$(document).ready(function () {
+
+  //  Initialize Select
+  $('select').material_select();
+
+  //  Initialize Modal
+  $('#modal').modal();
+});
+
+/***/ }),
+/* 25 */
+/***/ (function(module, exports) {
+
+$(document).ready(function () {
+
+  loadBuildOptions();
+
+  $('#home-search').click(function () {
+
+    $('#modal').modal('close');
+  });
+
+  $('#search-submit').click(function () {
+
+    $('#home-form').submit();
+
+    $('#modal').modal('close');
+  });
+
+  $('#build').change(function () {
+
+    loadSelectOptions('#build', '#floor', 'floor');
+  });
+
+  $('#floor').change(function () {
+
+    loadSelectOptions('#floor', '#room', 'local');
+  });
+});
+
+//Make a packet.
+
+function loadSelectOptions(search, target, requestParameter) {
+
+  requestSearch();
+
+  var searchValue = $(search).val();
+
+  $.get('local?search=' + search + ':' + searchValue, function (data) {
+
+    $(target).html('<option></option>');
+
+    for (var i = 0, len = data.data.length; i < len; i++) {
+
+      $(target).append('<option value="' + data.data[i][requestParameter] + '">' + data.data[i][requestParameter] + '</option>');
+    }
+
+    $('select').material_select();
+  });
+}
+//-----------------------------------
+function loadBuildOptions() {
+
+  $.get('local', function (data) {
+
+    console.log(data);
+
+    for (var i = 0, len = data.data.length; i < len; i++) {
+
+      $('#build').append('<option value="' + data.data[i].build + '">' + data.data[i].build + '</option>');
+    }
+
+    $('#build').material_select();
+  });
+}
 
 /***/ })
 /******/ ]);

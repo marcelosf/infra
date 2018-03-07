@@ -3,9 +3,8 @@
 namespace Infra\Http\Controllers\Home;
 
 use Infra\Http\Controllers\Controller;
-use Infra\Repositories\Infra\PatchRepositoryEloquent;
-use Infra\Validators\Infra\PatchValidator;
-use Prettus\Repository\Criteria\RequestCriteria;
+use Infra\Repositories\PatchList\PatchListRepositoryEloquent;
+use Infra\Validators\PatchListValidator;
 
 
 class HomeController extends Controller
@@ -17,7 +16,7 @@ class HomeController extends Controller
     protected $validator;
 
 
-    public function __construct(PatchRepositoryEloquent $repository, PatchValidator $validator)
+    public function __construct(PatchListRepositoryEloquent $repository, PatchListValidator $validator)
     {
 
         $this->repository = $repository;
@@ -29,11 +28,15 @@ class HomeController extends Controller
 
     public function index() {
 
-        $this->repository->pushCriteria(app(RequestCriteria::class));
-
-        $patches = $this->repository->paginate(14);
+        $patches = $this->repository->paginate(12);
 
         $pagination = $patches['meta']['pagination'];
+
+        if (request()->wantsJson()) {
+
+            return response()->json(['data' => $patches, 'pagination' => $pagination]);
+
+        }
 
         return view('home.index', compact('patches', 'pagination'));
 
