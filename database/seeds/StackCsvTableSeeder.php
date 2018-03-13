@@ -1,11 +1,9 @@
 <?php
 
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\DB;
 
-class localCsvTableSeeder extends Seeder
+class StackCsvTableSeeder extends Seeder
 {
-
     private $csvFile;
 
     private $csvDelimiter;
@@ -14,7 +12,7 @@ class localCsvTableSeeder extends Seeder
     public function __construct()
     {
 
-        $this->csvFile = 'database/csv/local.csv';
+        $this->csvFile = 'database/csv/list.csv';
 
         $this->csvDelimiter = ';';
 
@@ -30,13 +28,11 @@ class localCsvTableSeeder extends Seeder
         while(($data = $this->dumpCsv($handle)) !== false)
         {
 
-            DB::table('local')->insert([
+            DB::table('stack')->insert([
 
-                'build' => $data[2],
+                'hostname' => $data[16],
 
-                'floor' => $data[1],
-
-                'local' => $data[0],
+                'rack_id' => $this->getRackId($data[27]),
 
                 'created_at' => now(),
             ]);
@@ -55,7 +51,14 @@ class localCsvTableSeeder extends Seeder
     private function dumpCsv ($handle)
     {
 
-        return fgetcsv($handle, 1000, $this->csvDelimiter);
+        return fgetcsv($handle, 10000, $this->csvDelimiter);
+
+    }
+
+    private function getRackId ($rack)
+    {
+
+        return DB::table('racks')->where('name', '=', $rack)->pluck('id')[0];
 
     }
 
@@ -64,7 +67,7 @@ class localCsvTableSeeder extends Seeder
 
         DB::statement("SET FOREIGN_KEY_CHECKS=0;");
 
-        DB::table('local')->truncate();
+        DB::table('stack')->truncate();
 
         DB::statement("SET FOREIGN_KEY_CHECKS=1;");
 

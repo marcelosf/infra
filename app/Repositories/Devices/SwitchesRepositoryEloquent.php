@@ -2,6 +2,7 @@
 
 namespace Infra\Repositories\Devices;
 
+use Infra\Presenters\SwitchesPresenter;
 use Prettus\Repository\Eloquent\BaseRepository;
 use Prettus\Repository\Criteria\RequestCriteria;
 use Infra\Repositories\Devices\SwitchesRepository;
@@ -36,6 +37,12 @@ class SwitchesRepositoryEloquent extends BaseRepository implements SwitchesRepos
         return SwitchesValidator::class;
     }
 
+    public function presenter()
+    {
+
+        return SwitchesPresenter::class;
+
+    }
 
     /**
      * Boot up the repository, pushing criteria

@@ -21,3 +21,5 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 Route::get('/', 'Home\HomeController@index');
 
 Route::apiResource('/locale', 'Local\LocalController');
+
+Route::apiResource('/switch', 'Devices\SwitchesController');

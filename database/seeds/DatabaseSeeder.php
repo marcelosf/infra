@@ -16,21 +16,21 @@ class DatabaseSeeder extends Seeder
 
         $this->call(localCsvTableSeeder::class);
 
-        $this->call(RackTableSeeder::class);
+        $this->call(RackCsvTableSeeder::class);
 
-        $this->call(PatchTableSeeder::class);
+        $this->call(PatchCsvTableSeeder::class);
 
-        $this->call(VoicePanelSeeder::class);
+        $this->call(VoicePanelCsvTableSeeder::class);
 
-        $this->call(StackSeeder::class);
+        $this->call(StackCsvTableSeeder::class);
 
-        $this->call(SwitchesSeeder::class);
+        $this->call(SwitchCsvTableSeeder::class);
 
-        $this->call(SwitchPortSeeder::class);
+        $this->call(SwitchPortCsvTableSeeder::class);
 
-        $this->call(VoicePortSeeder::class);
+        $this->call(VoicePanelCsvTableSeeder::class);
 
-        $this->call(PhoneSeeder::class);
+        $this->call(PhoneCsvTableSeeder::class);
 
     }
 }

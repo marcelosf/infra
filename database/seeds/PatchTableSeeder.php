@@ -13,7 +13,20 @@ class PatchTableSeeder extends Seeder
     public function run()
     {
 
+        $this->truncate();
+
         factory(Patch::class, 200)->create();
+
+    }
+
+    private function truncate ()
+    {
+
+        DB::statement("SET FOREIGN_KEY_CHECKS=0;");
+
+        DB::table('ppanel')->truncate();
+
+        DB::statement("SET FOREIGN_KEY_CHECKS=1;");
 
     }
 }

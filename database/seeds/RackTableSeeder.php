@@ -2,7 +2,7 @@
 
 use Illuminate\Database\Seeder;
 use Infra\Model\Infra\Rack;
-
+use Illuminate\Support\Facades\DB;
 
 class RackTableSeeder extends Seeder
 {
@@ -14,7 +14,20 @@ class RackTableSeeder extends Seeder
     public function run()
     {
 
-        factory(Rack::class, 12)->create();
+       $this->truncate();
+
+       factory(Rack::class, 12)->create();
+
+    }
+
+    private function truncate ()
+    {
+
+        DB::statement("SET FOREIGN_KEY_CHECKS=0;");
+
+        DB::table('racks')->truncate();
+
+        DB::statement("SET FOREIGN_KEY_CHECKS=1;");
 
     }
 }

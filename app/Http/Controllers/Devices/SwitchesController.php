@@ -2,60 +2,50 @@
 
 namespace Infra\Http\Controllers\Devices;
 
-use Illuminate\Http\Request;
-
 use Infra\Http\Requests;
+use Infra\Repositories\Devices\SwitchesRepositoryEloquent;
 use Prettus\Validator\Contracts\ValidatorInterface;
 use Prettus\Validator\Exceptions\ValidatorException;
-use Infra\Http\Requests\SwitchesCreateRequest;
-use Infra\Http\Requests\SwitchesUpdateRequest;
-use Infra\Repositories\Devices\SwitchesRepository;
+use Infra\Http\Requests\Devices\SwitchesCreateRequest;
+use Infra\Http\Requests\Devices\SwitchesUpdateRequest;
 use Infra\Validators\Devices\SwitchesValidator;
+use Infra\Http\Controllers\Controller;
 
-/**
- * Class SwitchesController.
- *
- * @package namespace Infra\Http\Controllers\Devices;
- */
+
 class SwitchesController extends Controller
 {
-    /**
-     * @var SwitchesRepository
-     */
+
     protected $repository;
 
-    /**
-     * @var SwitchesValidator
-     */
+
     protected $validator;
 
-    /**
-     * SwitchesController constructor.
-     *
-     * @param SwitchesRepository $repository
-     * @param SwitchesValidator $validator
-     */
-    public function __construct(SwitchesRepository $repository, SwitchesValidator $validator)
+
+    public function __construct(SwitchesRepositoryEloquent $repository, SwitchesValidator $validator)
     {
+
         $this->repository = $repository;
+
         $this->validator  = $validator;
+
     }
 
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+
     public function index()
     {
+
         $this->repository->pushCriteria(app('Prettus\Repository\Criteria\RequestCriteria'));
-        $switches = $this->repository->all();
+
+        $switches = $this->repository->paginate(20);
 
         if (request()->wantsJson()) {
 
             return response()->json([
+
                 'data' => $switches,
+
             ]);
+
         }
 
         return view('switches.index', compact('switches'));
