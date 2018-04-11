@@ -36,6 +36,8 @@ class CreateTableConnections extends Migration
     public function down()
     {
 
+        echo "CreateTableConnections \n";
+
         Schema::dropIfExists('connections');
 
     }

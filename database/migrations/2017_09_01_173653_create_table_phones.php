@@ -32,6 +32,8 @@ class CreateTablePhones extends Migration
      */
     public function down()
     {
+        echo "CreateTablePhones \n";
+
         Schema::dropIfExists('phones');
     }
 }

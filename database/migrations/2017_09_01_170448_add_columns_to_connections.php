@@ -30,6 +30,6 @@ class AddColumnsToConnections extends Migration
      */
     public function down()
     {
-        //
+        echo "AddColumnsToConnections \n";
     }
 }

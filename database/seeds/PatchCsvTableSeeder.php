@@ -9,13 +9,16 @@ class PatchCsvTableSeeder extends Seeder
 
     private $csvDelimiter;
 
+    private $rowBuffer;
 
     public function __construct()
     {
 
-        $this->csvFile = 'database/csv/list.csv';
+        $this->csvFile = 'database/csv/mainList.csv';
 
         $this->csvDelimiter = ';';
+
+        $this->rowBuffer = [];
 
     }
 
@@ -29,16 +32,31 @@ class PatchCsvTableSeeder extends Seeder
         while(($data = $this->dumpCsv($handle)) !== false)
         {
 
-            DB::table('ppanel')->insert([
+            $patch = [
 
-                'reference' => $data[6],
+                'reference' => $data[3],
+
                 'number' => (integer)$this->getPatchInformation($data)[1],
+
                 'port' => $this->getPatchInformation($data)[2],
-                'rack_id' => $this->getRackId($data[27]),
+
+                'rack_id' => $this->getRackId($data[13]),
+
                 'local_id' => $this->getLocalId($data),
+
                 'resource' => $this->getResource($data),
+
                 'created_at' => now(),
-            ]);
+
+            ];
+
+            if ($this->rowNotExists($patch)) {
+
+                DB::table('ppanel')->insert($patch);
+
+                $this->rowBuffer[] = $patch;
+
+            }
 
         }
 
@@ -63,7 +81,7 @@ class PatchCsvTableSeeder extends Seeder
 
         return DB::table('local')
 
-            ->where(['build' => $local[0], 'floor' => $local[2], 'local' => $local[4]])
+            ->where(['build' => $local[0], 'floor' => $local[1], 'local' => $local[2]])
 
             ->pluck('id')[0];
 
@@ -72,7 +90,7 @@ class PatchCsvTableSeeder extends Seeder
     private function getPatchInformation ($data)
     {
 
-        return explode('-', $data[6]);
+        return explode('-', $data[3]);
 
     }
 
@@ -83,18 +101,27 @@ class PatchCsvTableSeeder extends Seeder
 
     }
 
+
+    private function rowNotExists ($data)
+    {
+
+        return !in_array($data, $this->rowBuffer);
+
+    }
+
+
     private function getResource ($data)
     {
 
         $resource = 'network';
 
-        if ($data[22] === 1) {
+        if (($data[9] === 'S') || ($data[9] === 1)) {
 
             $resource = 'wireless';
 
         }
 
-        if ($data[23] === 1) {
+        if (($data[10] === 'S') || ($data[10] === 1)) {
 
             $resource = 'camera';
 

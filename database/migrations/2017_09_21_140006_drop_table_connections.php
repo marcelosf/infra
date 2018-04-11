@@ -25,6 +25,6 @@ class DropTableConnections extends Migration
      */
     public function down()
     {
-        //
+        echo "DropTableConnections \n";
     }
 }

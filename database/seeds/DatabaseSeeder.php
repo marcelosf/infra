@@ -12,8 +12,6 @@ class DatabaseSeeder extends Seeder
     public function run()
     {
 
-//        $this->call(LocalTableSeeder::class);
-
         $this->call(localCsvTableSeeder::class);
 
         $this->call(RackCsvTableSeeder::class);
@@ -27,10 +25,6 @@ class DatabaseSeeder extends Seeder
         $this->call(SwitchCsvTableSeeder::class);
 
         $this->call(SwitchPortCsvTableSeeder::class);
-
-        $this->call(VoicePanelCsvTableSeeder::class);
-
-        $this->call(PhoneCsvTableSeeder::class);
 
     }
 }

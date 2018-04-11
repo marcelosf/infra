@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class SwitchportsAlterColumnPort extends Migration
+class AlterSwitchesVlanNullable extends Migration
 {
     /**
      * Run the migrations.
@@ -16,7 +16,7 @@ class SwitchportsAlterColumnPort extends Migration
 
         Schema::table('switchports', function (Blueprint $table) {
 
-            $table->string('port')->change();
+            $table->string('vlan')->nullable()->change();
 
         });
 
@@ -30,7 +30,7 @@ class SwitchportsAlterColumnPort extends Migration
     public function down()
     {
 
-        echo "SwitchportsAlterColumnPort /n";
+        echo 'AlterSwitchesVlanNullable';
 
     }
 }

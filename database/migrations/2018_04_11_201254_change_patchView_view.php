@@ -4,11 +4,17 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class PatchView extends Migration
+class ChangePatchViewView extends Migration
 {
-
+    /**
+     * Run the migrations.
+     *
+     * @return void
+     */
     public function up()
     {
+
+        DB::statement("DROP VIEW patchList");
 
         DB::statement("
        
@@ -29,12 +35,12 @@ class PatchView extends Migration
                 rack.name rack
             
             from ppanel as pp
-            inner join local as l on l.id = pp.local_id
-            inner join switchports as sp on sp.ppanel_id = pp.id
-            inner join switches as switches on switches.id = sp.switch_id
-            inner join stack as stack on stack.id = switches.stack_id
-            inner join racks as rack on rack.id = pp.rack_id
-            inner join local as rlocal on rlocal.id = rack.local_id )
+            left join local as l on l.id = pp.local_id
+            left join switchports as sp on sp.ppanel_id = pp.id
+            left join switches as switches on switches.id = sp.switch_id
+            left join stack as stack on stack.id = switches.stack_id
+            left join racks as rack on rack.id = pp.rack_id
+            left join local as rlocal on rlocal.id = rack.local_id )
         
         ");
 
@@ -47,10 +53,6 @@ class PatchView extends Migration
      */
     public function down()
     {
-        echo "PatchView /n";
-
-        DB::statement("DROP VIEW IF EXISTS patchList");
-
-
+        //
     }
 }

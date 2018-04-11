@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
 
 class StackCsvTableSeeder extends Seeder
 {
@@ -8,13 +9,16 @@ class StackCsvTableSeeder extends Seeder
 
     private $csvDelimiter;
 
+    private $rowBuffer;
 
     public function __construct()
     {
 
-        $this->csvFile = 'database/csv/list.csv';
+        $this->csvFile = 'database/csv/mainList.csv';
 
         $this->csvDelimiter = ';';
+
+        $this->rowBuffer = [];
 
     }
 
@@ -28,16 +32,38 @@ class StackCsvTableSeeder extends Seeder
         while(($data = $this->dumpCsv($handle)) !== false)
         {
 
-            DB::table('stack')->insert([
+            $stack = [
 
-                'hostname' => $data[16],
+                'hostname' => $data[5],
 
-                'rack_id' => $this->getRackId($data[27]),
+                'rack_id' => $this->getRackId($data[13]),
 
                 'created_at' => now(),
-            ]);
+            ];
+
+            if ($this->rowNotExists($stack)) {
+
+                DB::table('stack')->insert($stack);
+
+                $this->bufferRow($stack);
+
+            }
 
         }
+
+    }
+
+    private function rowNotExists ($data)
+    {
+
+        return !in_array($data, $this->rowBuffer);
+
+    }
+
+    private function bufferRow ($row)
+    {
+
+        $this->rowBuffer[] = $row;
 
     }
 

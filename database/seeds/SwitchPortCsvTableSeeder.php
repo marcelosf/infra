@@ -9,33 +9,35 @@ class SwitchPortCsvTableSeeder extends Seeder
 
     private $csvDelimiter;
 
+    private $rowBuffer;
+
 
     public function __construct()
     {
 
-        $this->csvFile = 'database/csv/list.csv';
+        $this->csvFile = 'database/csv/mainList.csv';
 
         $this->csvDelimiter = ';';
+
+        $this->rowBuffer = [];
 
     }
 
     public function run()
     {
 
-        $this->truncate();
+//        $this->truncate();
 
         $handle = $this->handle();
 
         while(($data = $this->dumpCsv($handle)) !== false)
         {
 
-            if ($data[16] !== 'NULL') {
+            if (!$this->disconnected($data)) {
 
-                echo 'Inserting: ' . $data[16] . "\n";
+                $switchPort = [
 
-                DB::table('switchports')->insert([
-
-                    'port' => $data[20],
+                    'port' => $this->getPort($data),
 
                     'is_poe' => $this->isPoe($data),
 
@@ -48,11 +50,48 @@ class SwitchPortCsvTableSeeder extends Seeder
                     'ppanel_id' => $this->getPpanelId($data),
 
                     'created_at' => now(),
-                ]);
+                ];
+
+                if ($data[7] !== 'NULL' && ($this->rowNotExists($switchPort))) {
+
+                    DB::table('switchports')->where(['switch_id' => $switchPort['switch_id'], 'port' => $switchPort['port']])
+                        ->update($switchPort);
+
+                    $this->bufferRow($switchPort);
+
+                }
 
             }
 
         }
+
+    }
+
+    private function disconnected ($data)
+    {
+
+        return $data[8] === 'NULL' || empty($data[8]);
+
+    }
+
+    private function rowNotExists ($row)
+    {
+
+        return !in_array($row, $this->rowBuffer);
+
+    }
+
+    private function bufferRow ($row)
+    {
+
+        $this->rowBuffer[] = $row;
+
+    }
+
+    private function getPort ($data)
+    {
+
+        return preg_replace('/.*(\d.)/', '$1', $data[8]);
 
     }
 
@@ -75,7 +114,7 @@ class SwitchPortCsvTableSeeder extends Seeder
 
         if ($data[6]) {
 
-            return DB::table('switches')->where('hostname', '=', $data[16])->pluck('id')[0];
+            return DB::table('switches')->where('hostname', '=', $data[7])->pluck('id')[0];
 
         }
 
@@ -86,9 +125,9 @@ class SwitchPortCsvTableSeeder extends Seeder
     private function getPpanelId ($data)
     {
 
-        if ($data[6]) {
+        if ($data[3]) {
 
-            return DB::table('ppanel')->where('reference', '=', $data[6])->pluck('id')[0];
+            return DB::table('ppanel')->where('reference', '=', $data[3])->pluck('id')[0];
 
         }
 
@@ -98,19 +137,19 @@ class SwitchPortCsvTableSeeder extends Seeder
 
     private function getVlan($data) {
 
-        if ($data[24]) {
+        if ($data[11]) {
 
-            return $data[24];
+            return $data[11];
 
         }
 
-        if ($data[22] == 1) {
+        if ($data[9] == 'S') {
 
             return '50, 100, 101, 115';
 
         }
 
-        if ($data[23] == 1) {
+        if ($data[10] == 'S') {
 
             return '12';
 
@@ -123,7 +162,7 @@ class SwitchPortCsvTableSeeder extends Seeder
     private function isPoe ($data)
     {
 
-        if ($data[22] === 0 || $data[23] === 0) {
+        if ($data[9] !== 'S' || $data[10] !== 'S') {
 
             return 0;
 

@@ -29,6 +29,8 @@ class AlterPpatchTable extends Migration
      */
     public function down()
     {
+        echo "AlterPpatchTable \n";
+
         Schema::table('ppanel', function (Blueprint $table){
 
             $table->dropColumn(['resource']);

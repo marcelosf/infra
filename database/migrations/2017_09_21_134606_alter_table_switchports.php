@@ -16,7 +16,7 @@ class AlterTableSwitchports extends Migration
 
         Schema::table('switchports', function (Blueprint $table) {
 
-            $table->integer('ppanel_id')->unsigned();
+            $table->integer('ppanel_id')->unsigned()->nullable();
             $table->foreign('ppanel_id')->references('id')->on('ppanel');
 
         });
@@ -31,15 +31,8 @@ class AlterTableSwitchports extends Migration
     public function down()
     {
 
-        if (Schema::hasColumn('switchports', 'ppanel_id')) {
+        echo "AlterTableSwitchports \n";
 
-            Schema::table('switchports', function (Blueprint $table) {
-
-                $table->dropForeign('ppanel_id');
-
-            });
-
-        }
 
     }
 }

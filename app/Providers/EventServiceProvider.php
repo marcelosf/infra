@@ -14,7 +14,15 @@ class EventServiceProvider extends ServiceProvider
      */
     protected $listen = [
         'Infra\Events\Event' => [
+
             'Infra\Listeners\EventListener',
+
+        ],
+
+        'Infra\Events\SwitchCreated' => [
+
+            'Infra\Listeners\CreateSwitchPorts'
+
         ],
     ];
 

@@ -30,11 +30,7 @@ class SwitchportsAlterColumnVlan extends Migration
     public function down()
     {
 
-        Schema::table('switchports', function (Blueprint $table) {
-
-            $table->integer('vlan')->change();
-
-        });
+        echo "SwitchportsAlterColumnVlan \n";
 
     }
 }

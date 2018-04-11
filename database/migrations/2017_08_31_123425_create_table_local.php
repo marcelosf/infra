@@ -29,6 +29,9 @@ class CreateTableLocal extends Migration
      */
     public function down()
     {
+
+        echo get_class($this) . "\n";
+
         Schema::dropIfExists('local');
     }
 }

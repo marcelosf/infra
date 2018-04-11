@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
 
 class VoicePortCsvTableSeeder extends Seeder
 {
@@ -12,7 +13,7 @@ class VoicePortCsvTableSeeder extends Seeder
     public function __construct()
     {
 
-        $this->csvFile = 'database/csv/list.csv';
+        $this->csvFile = 'database/csv/mainList.csv';
 
         $this->csvDelimiter = ';';
 
@@ -34,7 +35,7 @@ class VoicePortCsvTableSeeder extends Seeder
 
             DB::table('voiceports')->insert([
 
-                'number' => $data[14],
+                'number' => $data[16],
 
                 'central' => $data[14],
 

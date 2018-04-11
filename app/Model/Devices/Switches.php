@@ -24,7 +24,7 @@ class Switches extends Model
     public function ports()
     {
 
-        return $this->hasMany('Infra\Model\Devices\SwitchPorts');
+        return $this->hasMany('Infra\Model\Devices\SwitchPorts', 'switch_id');
 
     }
 

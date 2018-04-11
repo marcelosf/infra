@@ -14,6 +14,7 @@ class SwitchPorts extends Model
         'poe_status',
         'vlan',
         'switch_id',
+        'ppanel_id'
 
     ];
 

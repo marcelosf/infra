@@ -2,6 +2,8 @@
 
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
+use \Infra\Events\SwitchCreated;
+use Infra\Entities\Devices\Switches;
 
 class SwitchCsvTableSeeder extends Seeder
 {
@@ -10,13 +12,20 @@ class SwitchCsvTableSeeder extends Seeder
 
     private $csvDelimiter;
 
+    private $rowBuffer;
 
-    public function __construct()
+    private $switch;
+
+    public function __construct(Switches $switch)
     {
 
-        $this->csvFile = 'database/csv/switches.csv';
+        $this->csvFile = 'database/csv/mainList.csv';
 
         $this->csvDelimiter = ';';
+
+        $this->switch = $switch;
+
+        $this->rowBuffer = [];
 
     }
 
@@ -30,31 +39,57 @@ class SwitchCsvTableSeeder extends Seeder
         while(($data = $this->dumpCsv($handle)) !== false)
         {
 
-            if ($data[0] !== 'NULL') {
+            $switch = [
 
-                DB::table('switches')->insert([
+                'hostname' => $data[7],
 
-                    'hostname' => $data[1],
+                'ip' => $data[6],
 
-                    'ip' => $data[3],
+                'num_ports' => 48,
 
-                    'num_ports' => 48,
+                'brand' => 'HP5120-G',
 
-                    'brand' => 'HP5120-G',
+                'register' => 'Preencher',
 
-                    'register' => $data[0],
+                'stack_id'     => $this->getStackId($data[5]),
 
-                    'stack_id'     => $this->getStackId($data[1]),
+                'stack' => $this->getStack($data),
 
-                    'stack' => $this->getStack($data),
+                'created_at' => now(),
+            ];
 
-                    'created_at' => now(),
-                ]);
+            if ($data[7] !== 'NULL' && ($this->rowNotExists($switch))) {
+
+                $newSwitch = $this->switch->create($switch);
+
+                event(new SwitchCreated($newSwitch));
+
+                $this->bufferRow($switch);
 
             }
 
-
         }
+
+    }
+
+    private function rowNotExists ($row)
+    {
+
+        return !in_array($row, $this->rowBuffer);
+
+    }
+
+    private function bufferRow ($row)
+    {
+
+        $this->rowBuffer[] = $row;
+
+    }
+
+    private function getSwitch ($switch)
+    {
+
+        return $this->switch->where('hostname', '=', $switch['hostname']);
 
     }
 
@@ -75,7 +110,7 @@ class SwitchCsvTableSeeder extends Seeder
     private function getStack ($data)
     {
 
-        $hostnameExploded = explode('_', $data[0]);
+        $hostnameExploded = explode('_', $data[7]);
 
         return end($hostnameExploded);
 

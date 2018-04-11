@@ -25,6 +25,6 @@ class DeleteTableStackSwitch extends Migration
      */
     public function down()
     {
-        //
+
     }
 }

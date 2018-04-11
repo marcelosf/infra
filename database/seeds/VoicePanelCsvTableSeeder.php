@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
 
 class VoicePanelCsvTableSeeder extends Seeder
 {
@@ -8,13 +9,17 @@ class VoicePanelCsvTableSeeder extends Seeder
 
     private $csvDelimiter;
 
+    private $rowBuffer;
 
     public function __construct()
     {
 
-        $this->csvFile = 'database/csv/list.csv';
+        $this->csvFile = 'database/csv/mainList.csv';
 
         $this->csvDelimiter = ';';
+
+        $this->rowBuffer = [];
+
 
     }
 
@@ -30,20 +35,51 @@ class VoicePanelCsvTableSeeder extends Seeder
 
             if ($data[13] !== 'NULL') {
 
-                DB::table('voicepanels')->insert([
+                $voice = [
 
-                    'number' => $data[13],
+                    'number' => $this->getVoiceNumber($data),
 
                     'numports' => 48,
 
-                    'rack_id' => $this->getRackId($data),
+                    'rack_id' => $this->getRackId($data[13]),
 
                     'created_at' => now(),
-                ]);
+                ];
+
+                if ($this->rowNotExists($voice)) {
+
+                    DB::table('voicepanels')->insert($voice);
+
+                    $this->bufferRow($voice);
+
+                }
 
             }
 
         }
+
+    }
+
+    private function rowNotExists ($data)
+    {
+
+        return !in_array($data, $this->rowBuffer);
+
+    }
+
+    private function bufferRow ($row)
+    {
+
+        $this->rowBuffer[] = $row;
+
+    }
+
+    private function getVoiceNumber ($data)
+    {
+
+        $voicePortNumber = (integer)$data[17];
+
+        return  (string)ceil($voicePortNumber/50);
 
     }
 

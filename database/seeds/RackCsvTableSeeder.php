@@ -10,13 +10,17 @@ class RackCsvTableSeeder extends Seeder
 
     private $csvDelimiter;
 
+    private $rowBuffer;
+
 
     public function __construct()
     {
 
-        $this->csvFile = 'database/csv/rack.csv';
+        $this->csvFile = 'database/csv/mainList.csv';
 
         $this->csvDelimiter = ';';
+
+        $this->rowBuffer = [];
 
     }
 
@@ -32,16 +36,24 @@ class RackCsvTableSeeder extends Seeder
 
             $localId = $this->getLocalId($data);
 
-            DB::table('racks')->insert([
+            $rack = [
 
-                'name' => $data[4],
+                'name' => $data[13],
 
                 'local_id' => $localId,
 
-                'u' => $data[3],
+                'u' => 48,
 
                 'created_at' => now(),
-            ]);
+            ];
+
+            if ($this->rowNotExists($data[13])) {
+
+              DB::table('racks')->insert($rack);
+
+              $this->bufferRow($rack['name']);
+
+            }
 
         }
 
@@ -61,14 +73,51 @@ class RackCsvTableSeeder extends Seeder
 
     }
 
-    private function getLocalId ($local)
+    private function getLocalId ($data)
     {
+
+        $local = $this->getRackLocal($data);
+
+        echo $local['build'] . '-' . $local['local'] . "\n";
 
         return DB::table('local')
 
-            ->where(['build' => $local[0], 'floor' => $local[1], 'local' => $local[2]])
+            ->where(['build' => $local['build'], 'local' => $local['local']])
 
             ->pluck('id')[0];
+
+    }
+
+    private function rowNotExists ($data)
+    {
+
+        return !in_array($data, $this->rowBuffer);
+
+    }
+
+    private function bufferRow($data)
+    {
+
+        $this->rowBuffer[] = $data;
+
+    }
+
+    private function getRackLocal ($data)
+    {
+
+        $local = ['build' => '', 'local' => ''];
+
+        $local['local'] = preg_replace('/(.*)(\d{3})/', '$2', $data[12]);
+
+        $local['build'] = preg_replace('/(.*)(\d{3})/', '$1', $data[12]);
+
+        if (empty($local['build'])) {
+
+            $local['build'] = $data[0];
+
+        }
+
+        return $local;
 
     }
 
