@@ -19,7 +19,7 @@ class SwitchCsvTableSeeder extends Seeder
     public function __construct(Switches $switch)
     {
 
-        $this->csvFile = 'database/csv/mainList.csv';
+        $this->csvFile = env('CSV_SEED_FILE');
 
         $this->csvDelimiter = ';';
 
@@ -60,12 +60,12 @@ class SwitchCsvTableSeeder extends Seeder
 
             if ($data[7] !== 'NULL' && ($this->rowNotExists($switch))) {
 
-                $newSwitch = $this->switch->create($switch);
+                $newSwitch = $this->switch->firstOrCreate($switch);
 
                 event(new SwitchCreated($newSwitch));
 
-                $this->bufferRow($switch);
-
+                echo $switch['hostname'] . " \n";
+                
             }
 
         }
@@ -76,20 +76,6 @@ class SwitchCsvTableSeeder extends Seeder
     {
 
         return !in_array($row, $this->rowBuffer);
-
-    }
-
-    private function bufferRow ($row)
-    {
-
-        $this->rowBuffer[] = $row;
-
-    }
-
-    private function getSwitch ($switch)
-    {
-
-        return $this->switch->where('hostname', '=', $switch['hostname']);
 
     }
 
@@ -119,18 +105,24 @@ class SwitchCsvTableSeeder extends Seeder
     private function getStackId ($stack)
     {
 
-        return DB::table('stack')->where('hostname', '=', $stack)->pluck('id')[0];
+        return DB::table('stacks')->where('hostname', '=', $stack)->pluck('id')[0];
 
     }
 
     private function truncate ()
     {
 
-        DB::statement("SET FOREIGN_KEY_CHECKS=0;");
+        $truncateAllowed = env('TRUNCATE_SEED');
 
-        DB::table('switches')->truncate();
+        if ($truncateAllowed) {
 
-        DB::statement("SET FOREIGN_KEY_CHECKS=1;");
+            DB::statement("SET FOREIGN_KEY_CHECKS=0;");
+
+            DB::table('switches')->truncate();
+
+            DB::statement("SET FOREIGN_KEY_CHECKS=1;");
+
+        }
 
     }
 

@@ -26,5 +26,9 @@ class DatabaseSeeder extends Seeder
 
         $this->call(SwitchPortCsvTableSeeder::class);
 
+        $this->call(VoicePortCsvTableSeeder::class);
+
+        $this->call(PhoneCsvTableSeeder::class);
+
     }
 }

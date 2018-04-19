@@ -2,6 +2,8 @@
 
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
+use Infra\Entities\Devices\SwitchPorts;
+use Infra\Entities\Devices\Switches;
 
 class SwitchPortCsvTableSeeder extends Seeder
 {
@@ -11,11 +13,19 @@ class SwitchPortCsvTableSeeder extends Seeder
 
     private $rowBuffer;
 
+    private $switchPorts;
 
-    public function __construct()
+    private $switch;
+
+
+    public function __construct(SwitchPorts $switchPorts, Switches $switch)
     {
 
-        $this->csvFile = 'database/csv/mainList.csv';
+        $this->switchPorts = $switchPorts;
+
+        $this->switch = $switch;
+
+        $this->csvFile = env('CSV_SEED_FILE');
 
         $this->csvDelimiter = ';';
 
@@ -33,33 +43,40 @@ class SwitchPortCsvTableSeeder extends Seeder
         while(($data = $this->dumpCsv($handle)) !== false)
         {
 
-            if (!$this->disconnected($data)) {
+            $this->createSwitchPorts($data);
 
-                $switchPort = [
+        }
 
-                    'port' => $this->getPort($data),
+    }
 
-                    'is_poe' => $this->isPoe($data),
+    private function createSwitchPorts ($data)
+    {
 
-                    'poe_status' => $this->isPoe($data),
+        if (!$this->disconnected($data)) {
 
-                    'vlan' => $this->getVlan($data),
+            $switchPort = [
 
-                    'switch_id' => $this->getSwitchId($data),
+                'port' => $this->getPort($data),
 
-                    'ppanel_id' => $this->getPpanelId($data),
+                'is_poe' => $this->isPoe($data),
 
-                    'created_at' => now(),
-                ];
+                'poe_status' => $this->isPoe($data),
 
-                if ($data[7] !== 'NULL' && ($this->rowNotExists($switchPort))) {
+                'vlan' => $this->getVlan($data),
 
-                    DB::table('switchports')->where(['switch_id' => $switchPort['switch_id'], 'port' => $switchPort['port']])
-                        ->update($switchPort);
+                'switch_id' => $this->getSwitchId($data),
 
-                    $this->bufferRow($switchPort);
+                'ppanel_id' => $this->getPpanelId($data),
 
-                }
+            ];
+
+            if ($data[7] !== 'NULL' && ($this->rowNotExists($switchPort))) {
+
+                DB::table('switchports')->where(['switch_id' => $switchPort['switch_id'], 'port' => $switchPort['port']])
+
+                    ->update($switchPort);
+
+                $this->bufferRow($switchPort);
 
             }
 
@@ -114,7 +131,7 @@ class SwitchPortCsvTableSeeder extends Seeder
 
         if ($data[6]) {
 
-            return DB::table('switches')->where('hostname', '=', $data[7])->pluck('id')[0];
+            return $this->switch->where('hostname', '=', $data[7])->pluck('id')[0];
 
         }
 
@@ -175,11 +192,17 @@ class SwitchPortCsvTableSeeder extends Seeder
     private function truncate ()
     {
 
-        DB::statement("SET FOREIGN_KEY_CHECKS=0;");
+        $truncateAllowed = env('TRUNCATE_SEED');
 
-        DB::table('switchports')->truncate();
+        if ($truncateAllowed) {
 
-        DB::statement("SET FOREIGN_KEY_CHECKS=1;");
+            DB::statement("SET FOREIGN_KEY_CHECKS=0;");
+
+            DB::table('local')->truncate();
+
+            DB::statement("SET FOREIGN_KEY_CHECKS=1;");
+
+        }
 
     }
 }

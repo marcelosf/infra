@@ -2,6 +2,7 @@
 
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
+use Infra\Entities\Infra\Patch;
 
 class PatchCsvTableSeeder extends Seeder
 {
@@ -11,10 +12,14 @@ class PatchCsvTableSeeder extends Seeder
 
     private $rowBuffer;
 
-    public function __construct()
+    private $patch;
+
+    public function __construct(Patch $patch)
     {
 
-        $this->csvFile = 'database/csv/mainList.csv';
+        $this->patch = $patch;
+
+        $this->csvFile = env('CSV_SEED_FILE');
 
         $this->csvDelimiter = ';';
 
@@ -32,33 +37,32 @@ class PatchCsvTableSeeder extends Seeder
         while(($data = $this->dumpCsv($handle)) !== false)
         {
 
-            $patch = [
-
-                'reference' => $data[3],
-
-                'number' => (integer)$this->getPatchInformation($data)[1],
-
-                'port' => $this->getPatchInformation($data)[2],
-
-                'rack_id' => $this->getRackId($data[13]),
-
-                'local_id' => $this->getLocalId($data),
-
-                'resource' => $this->getResource($data),
-
-                'created_at' => now(),
-
-            ];
-
-            if ($this->rowNotExists($patch)) {
-
-                DB::table('ppanel')->insert($patch);
-
-                $this->rowBuffer[] = $patch;
-
-            }
+            $this->createPatch($data);
 
         }
+
+    }
+
+    private function createPatch ($data)
+    {
+
+        $patch = [
+
+            'reference' => $data[3],
+
+            'number' => (integer)$this->getPatchInformation($data)[1],
+
+            'port' => $this->getPatchInformation($data)[2],
+
+            'rack_id' => $this->getRackId($data[13]),
+
+            'local_id' => $this->getLocalId($data),
+
+            'resource' => $this->getResource($data),
+
+        ];
+
+        $this->patch->firstOrCreate($patch);
 
     }
 
@@ -102,14 +106,6 @@ class PatchCsvTableSeeder extends Seeder
     }
 
 
-    private function rowNotExists ($data)
-    {
-
-        return !in_array($data, $this->rowBuffer);
-
-    }
-
-
     private function getResource ($data)
     {
 
@@ -134,11 +130,17 @@ class PatchCsvTableSeeder extends Seeder
     private function truncate ()
     {
 
-        DB::statement("SET FOREIGN_KEY_CHECKS=0;");
+        $truncateAllowed = env('TRUNCATE_SEED');
 
-        DB::table('ppanel')->truncate();
+        if ($truncateAllowed) {
 
-        DB::statement("SET FOREIGN_KEY_CHECKS=1;");
+            DB::statement("SET FOREIGN_KEY_CHECKS=0;");
+
+            DB::table('ppanel')->truncate();
+
+            DB::statement("SET FOREIGN_KEY_CHECKS=1;");
+
+        }
 
     }
 

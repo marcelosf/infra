@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Database\Seeder;
+use Infra\Entities\Local\Local;
 use Illuminate\Support\Facades\DB;
 
 class localCsvTableSeeder extends Seeder
@@ -12,11 +13,15 @@ class localCsvTableSeeder extends Seeder
 
     private $rowBuffer;
 
+    private $local;
 
-    public function __construct()
+
+    public function __construct(Local $local)
     {
 
-        $this->csvFile = 'database/csv/mainList.csv';
+        $this->local = $local;
+
+        $this->csvFile = env('CSV_SEED_FILE');
 
         $this->csvDelimiter = ';';
 
@@ -45,22 +50,17 @@ class localCsvTableSeeder extends Seeder
     private function createLocal ($data)
     {
 
-        if ($this->rowNotExist($data)) {
+        $local = $this->local->firstOrCreate([
 
-            DB::table('local')->insert([
+            'build' => $data[0],
 
-                'build' => $data[0],
+            'floor' => $data[1],
 
-                'floor' => $data[1],
+            'local' => $data[2],
 
-                'local' => $data[2],
+        ]);
 
-                'created_at' => now(),
-            ]);
-
-            $this->rowBuffer[] = ['build' => $data[0], 'floor' => $data[1], 'local' => $data[2]];
-
-        }
+        print_r($local . "\n");
 
     }
 
@@ -69,22 +69,14 @@ class localCsvTableSeeder extends Seeder
 
         $rackLocal = $this->getRackLocal($data);
 
-        if ($this->rowNotExist([$rackLocal['build'], $rackLocal['floor'], $rackLocal['local']])) {
+        $this->local->firstOrCreate([
 
-            DB::table('local')->insert([
+            'build' => $rackLocal['build'],
 
-                'build' => $rackLocal['build'],
+            'floor' => $rackLocal['floor'],
 
-                'floor' => $rackLocal['floor'],
-
-                'local' => $rackLocal['local'],
-
-                'created_at' => now(),
-            ]);
-
-            $this->rowBuffer[] = ['build' => $rackLocal['build'], 'floor' => $rackLocal['floor'], 'local' => $rackLocal['local']];
-
-        }
+            'local' => $rackLocal['local']
+        ]);
 
     }
 
@@ -123,23 +115,20 @@ class localCsvTableSeeder extends Seeder
 
     }
 
-    private function rowNotExist ($data)
-    {
-
-        $local = ['build' => $data[0], 'floor' => $data[1], 'local' => $data[2]];
-
-        return  !in_array($local, $this->rowBuffer);
-
-    }
-
     private function truncate ()
     {
 
-        DB::statement("SET FOREIGN_KEY_CHECKS=0;");
+        $truncateAllowed = env('TRUNCATE_SEED');
 
-        DB::table('local')->truncate();
+        if ($truncateAllowed) {
 
-        DB::statement("SET FOREIGN_KEY_CHECKS=1;");
+            DB::statement("SET FOREIGN_KEY_CHECKS=0;");
+
+            DB::table('local')->truncate();
+
+            DB::statement("SET FOREIGN_KEY_CHECKS=1;");
+
+        }
 
     }
 

@@ -2,6 +2,7 @@
 
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
+use Infra\Entities\Infra\VoicePort;
 
 class PhoneCsvTableSeeder extends Seeder
 {
@@ -9,11 +10,15 @@ class PhoneCsvTableSeeder extends Seeder
 
     private $csvDelimiter;
 
+    private $voicePort;
 
-    public function __construct()
+
+    public function __construct(VoicePort $voicePort)
     {
 
-        $this->csvFile = 'database/csv/rack.csv';
+        $this->voicePort = $voicePort;
+
+        $this->csvFile = env('CSV_SEED_FILE');
 
         $this->csvDelimiter = ';';
 
@@ -29,20 +34,56 @@ class PhoneCsvTableSeeder extends Seeder
         while(($data = $this->dumpCsv($handle)) !== false)
         {
 
-            DB::table('phones')->insert([
+            if ($this->phoneConnected($data)) {
 
-                'number' => $data[11],
+                $phone = [
 
-                'category' => 'empty',
+                    'number' => $data[14],
 
-                'voice_port_id' => $this->getVoicePortId($data),
+                    'category' => 'empty'
 
-                'switch_port_id' => $this->getswitchPortId($data),
+                ];
 
-                'created_at' => now(),
-            ]);
+                $this->setVoicePortId($data, $phone);
+
+                $this->setSwitchPortId($data, $phone);
+
+               DB::table('phones')->insert($phone); 
+
+            }
 
         }
+
+    }
+
+
+    private function setVoicePortId ($data, $phone) 
+    {
+
+        if (!empty($data[15] && $data[15] !== 'NULL')) {
+
+            $phone['voice_port_id'] = $this->getVoicePortId($data);
+
+        }
+
+    }
+
+    private function setSwitchPortId ($data, $phone)
+    {
+
+        if (!empty($data[8] && $data[8] !== 'NULL'))
+        {
+
+            $phone['switch_port_id'] = $this->getSwitchPortId($data);
+
+        }
+
+    }
+
+    private function phoneConnected ($data)
+    {
+
+        return $data[14] !== 'NULL' && !empty($data[14]);
 
     }
 
@@ -63,7 +104,9 @@ class PhoneCsvTableSeeder extends Seeder
     private function getVoicePortId ($data)
     {
 
-        return DB::table('voiceport')->where(['central' => $data[14], 'distribution' => $data[15]])->pluck('id')[0];
+        printf("central => %s, distribution: %s \n", $data[15], $data[16]);
+
+        return $this->voicePort->where(['central' => $data[15], 'distribution' => $data[16]])->pluck('id')[0];
 
     }
 
@@ -71,6 +114,8 @@ class PhoneCsvTableSeeder extends Seeder
     {
 
         $switch = DB::table('switches')->where('hostname', '=', $data[16])->pluck('id')[0];
+
+        printf("SwitchId: %s", $switch);
 
         return DB::table('switchport')->where('switch_id', '=', $switch)->pluck('id')[0];
 
@@ -80,11 +125,17 @@ class PhoneCsvTableSeeder extends Seeder
     private function truncate ()
     {
 
-        DB::statement("SET FOREIGN_KEY_CHECKS=0;");
+        $truncateAllowed = env('TRUNCATE_SEED');
 
-        DB::table('phones')->truncate();
+        if ($truncateAllowed) {
 
-        DB::statement("SET FOREIGN_KEY_CHECKS=1;");
+            DB::statement("SET FOREIGN_KEY_CHECKS=0;");
+
+            DB::table('phones')->truncate();
+
+            DB::statement("SET FOREIGN_KEY_CHECKS=1;");
+
+        }
 
     }
 }

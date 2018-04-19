@@ -2,6 +2,8 @@
 
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
+use Infra\Entities\Infra\VoicePanel;
+use Infra\Events\VoicepanelCreated;
 
 class VoicePanelCsvTableSeeder extends Seeder
 {
@@ -11,10 +13,14 @@ class VoicePanelCsvTableSeeder extends Seeder
 
     private $rowBuffer;
 
-    public function __construct()
+    private $voicePanel;
+
+    public function __construct(VoicePanel $voicePanel)
     {
 
-        $this->csvFile = 'database/csv/mainList.csv';
+        $this->voicePanel = $voicePanel;
+
+        $this->csvFile = env('CSV_SEED_FILE');
 
         $this->csvDelimiter = ';';
 
@@ -33,44 +39,33 @@ class VoicePanelCsvTableSeeder extends Seeder
         while(($data = $this->dumpCsv($handle)) !== false)
         {
 
-            if ($data[13] !== 'NULL') {
-
-                $voice = [
-
-                    'number' => $this->getVoiceNumber($data),
-
-                    'numports' => 48,
-
-                    'rack_id' => $this->getRackId($data[13]),
-
-                    'created_at' => now(),
-                ];
-
-                if ($this->rowNotExists($voice)) {
-
-                    DB::table('voicepanels')->insert($voice);
-
-                    $this->bufferRow($voice);
-
-                }
-
-            }
+            $this->createVoicePanel($data);
 
         }
 
     }
 
-    private function rowNotExists ($data)
+    private function createVoicePanel ($data)
     {
 
-        return !in_array($data, $this->rowBuffer);
+        if ($data[13] !== 'NULL') {
 
-    }
+            $voice = [
 
-    private function bufferRow ($row)
-    {
+                'number' => $this->getVoiceNumber($data),
 
-        $this->rowBuffer[] = $row;
+                'numports' => 48,
+
+                'rack_id' => $this->getRackId($data[13]),
+
+                'created_at' => now(),
+            ];
+
+            $newVoicePanel = $this->voicePanel->firstOrCreate($voice);
+
+            event(new VoicepanelCreated($newVoicePanel));   
+
+        }
 
     }
 
@@ -107,11 +102,19 @@ class VoicePanelCsvTableSeeder extends Seeder
     private function truncate ()
     {
 
-        DB::statement("SET FOREIGN_KEY_CHECKS=0;");
+        $truncateAllowed = env('TRUNCATE_SEED');
 
-        DB::table('voicepanels')->truncate();
+        if ($truncateAllowed) {
 
-        DB::statement("SET FOREIGN_KEY_CHECKS=1;");
+            DB::statement("SET FOREIGN_KEY_CHECKS=0;");
+
+            DB::table('voicepanels')->truncate();
+
+            DB::table('voiceports')->truncate();
+
+            DB::statement("SET FOREIGN_KEY_CHECKS=1;");
+
+        }
 
     }
 }

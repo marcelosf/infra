@@ -2,6 +2,7 @@
 
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
+use Infra\Entities\Devices\Stack;
 
 class StackCsvTableSeeder extends Seeder
 {
@@ -11,10 +12,14 @@ class StackCsvTableSeeder extends Seeder
 
     private $rowBuffer;
 
-    public function __construct()
+    private $stack;
+
+    public function __construct(Stack $stack)
     {
 
-        $this->csvFile = 'database/csv/mainList.csv';
+        $this->stack = $stack;
+
+        $this->csvFile = env('CSV_SEED_FILE');
 
         $this->csvDelimiter = ';';
 
@@ -32,38 +37,25 @@ class StackCsvTableSeeder extends Seeder
         while(($data = $this->dumpCsv($handle)) !== false)
         {
 
-            $stack = [
-
-                'hostname' => $data[5],
-
-                'rack_id' => $this->getRackId($data[13]),
-
-                'created_at' => now(),
-            ];
-
-            if ($this->rowNotExists($stack)) {
-
-                DB::table('stack')->insert($stack);
-
-                $this->bufferRow($stack);
-
-            }
+            $this->createStack($data);
 
         }
 
     }
 
-    private function rowNotExists ($data)
+    private function createStack ($data)
     {
 
-        return !in_array($data, $this->rowBuffer);
+        $stack = [
 
-    }
+            'hostname' => $data[5],
 
-    private function bufferRow ($row)
-    {
+            'rack_id' => $this->getRackId($data[13]),
 
-        $this->rowBuffer[] = $row;
+            'created_at' => now(),
+        ];
+
+        $this->stack->firstOrCreate($stack);
 
     }
 
@@ -91,11 +83,17 @@ class StackCsvTableSeeder extends Seeder
     private function truncate ()
     {
 
-        DB::statement("SET FOREIGN_KEY_CHECKS=0;");
+        $truncateAllowed = env('TRUNCATE_SEED');
 
-        DB::table('stack')->truncate();
+        if ($truncateAllowed) {
 
-        DB::statement("SET FOREIGN_KEY_CHECKS=1;");
+            DB::statement("SET FOREIGN_KEY_CHECKS=0;");
+
+            DB::table('stacks')->truncate();
+
+            DB::statement("SET FOREIGN_KEY_CHECKS=1;");
+
+        }
 
     }
 

@@ -14,7 +14,7 @@ class Stack extends Model
 
     ];
 
-    protected $table = 'stack';
+    protected $table = 'stacks';
 
 
     public function rack()

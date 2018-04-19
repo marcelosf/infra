@@ -13,7 +13,7 @@ class VoicePortCsvTableSeeder extends Seeder
     public function __construct()
     {
 
-        $this->csvFile = 'database/csv/mainList.csv';
+        $this->csvFile = env('CSV_SEED_FILE');
 
         $this->csvDelimiter = ';';
 
@@ -22,35 +22,45 @@ class VoicePortCsvTableSeeder extends Seeder
     public function run()
     {
 
-        $this->truncate();
+        // $this->truncate();
 
         $handle = $this->handle();
-
-        $line = 0;
 
         while(($data = $this->dumpCsv($handle)) !== false)
         {
 
-            echo $line . "\n";
+            $voicePort = [
 
-            DB::table('voiceports')->insert([
+                'number' => $data[17],
 
-                'number' => $data[16],
+                'central' => $data[15],
 
-                'central' => $data[14],
-
-                'distribution' => $data[15],
+                'distribution' => $data[16],
 
                 'voicepanel_id' => $this->getVoicePanelId($data[13]),
 
-                'ppanel_id' => $this->getPpanelId($data),
+                'ppanel_id' => $this->getPpanelId($data)
 
-                'created_at' => now(),
-            ]);
+            ];
 
-            $line ++;
+            if (!$this->disconnected($data)) {
+
+                DB::table('voiceports')->where(['voicepanel_id' => $voicePort['voicepanel_id'], 'number' => $voicePort['number']])
+                
+                    ->update($voicePort);
+
+                printf("number => %s, voicepanel_id => %s", $voicePort['number'], $voicePort['voicepanel_id']);
+
+            }
 
         }
+
+    }
+
+    private function disconnected ($data)
+    {
+
+        return $data[14] === 'NULL' || empty($data[8]);
 
     }
 
@@ -78,18 +88,24 @@ class VoicePortCsvTableSeeder extends Seeder
     private function getPpanelId ($data)
     {
 
-        return DB::table('ppanel')->were('patchPort', '=', $data[6])->pluck('id')[0];
+        return DB::table('ppanel')->where('reference', '=', $data[3])->pluck('id')[0];
 
     }
 
     private function truncate ()
     {
 
-        DB::statement("SET FOREIGN_KEY_CHECKS=0;");
+        $truncateAllowed = env('TRUNCATE_SEED');
 
-        DB::table('voiceports')->truncate();
+        if ($truncateAllowed) {
 
-        DB::statement("SET FOREIGN_KEY_CHECKS=1;");
+            DB::statement("SET FOREIGN_KEY_CHECKS=0;");
+
+            DB::table('local')->truncate();
+
+            DB::statement("SET FOREIGN_KEY_CHECKS=1;");
+
+        }
 
     }
 

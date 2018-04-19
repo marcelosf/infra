@@ -2,6 +2,7 @@
 
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
+use Infra\Entities\Infra\Rack;
 
 class RackCsvTableSeeder extends Seeder
 {
@@ -12,11 +13,15 @@ class RackCsvTableSeeder extends Seeder
 
     private $rowBuffer;
 
+    private $rack;
 
-    public function __construct()
+
+    public function __construct(Rack $rack)
     {
 
-        $this->csvFile = 'database/csv/mainList.csv';
+        $this->rack = $rack;
+
+        $this->csvFile = env('CSV_SEED_FILE');
 
         $this->csvDelimiter = ';';
 
@@ -34,28 +39,29 @@ class RackCsvTableSeeder extends Seeder
         while(($data = $this->dumpCsv($handle)) !== false)
         {
 
-            $localId = $this->getLocalId($data);
-
-            $rack = [
-
-                'name' => $data[13],
-
-                'local_id' => $localId,
-
-                'u' => 48,
-
-                'created_at' => now(),
-            ];
-
-            if ($this->rowNotExists($data[13])) {
-
-              DB::table('racks')->insert($rack);
-
-              $this->bufferRow($rack['name']);
-
-            }
+            $this->createRack($data);
 
         }
+
+    }
+
+    private function createRack ($data)
+    {
+
+        $localId = $this->getLocalId($data);
+
+        $rack = [
+
+            'name' => $data[13],
+
+            'local_id' => $localId,
+
+            'u' => 48,
+
+            'created_at' => now(),
+        ];
+
+        $this->rack->firstOrCreate($rack);
 
     }
 
@@ -88,20 +94,6 @@ class RackCsvTableSeeder extends Seeder
 
     }
 
-    private function rowNotExists ($data)
-    {
-
-        return !in_array($data, $this->rowBuffer);
-
-    }
-
-    private function bufferRow($data)
-    {
-
-        $this->rowBuffer[] = $data;
-
-    }
-
     private function getRackLocal ($data)
     {
 
@@ -124,11 +116,17 @@ class RackCsvTableSeeder extends Seeder
     private function truncate ()
     {
 
-        DB::statement("SET FOREIGN_KEY_CHECKS=0;");
+        $truncateAllowed = env('TRUNCATE_SEED');
 
-        DB::table('racks')->truncate();
+        if ($truncateAllowed) {
 
-        DB::statement("SET FOREIGN_KEY_CHECKS=1;");
+            DB::statement("SET FOREIGN_KEY_CHECKS=0;");
+
+            DB::table('racks')->truncate();
+
+            DB::statement("SET FOREIGN_KEY_CHECKS=1;");
+
+        }
 
     }
 

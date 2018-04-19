@@ -24,6 +24,12 @@ class EventServiceProvider extends ServiceProvider
             'Infra\Listeners\CreateSwitchPorts'
 
         ],
+
+        'Infra\Events\VoicepanelCreated' => [
+
+            'Infra\Listeners\CreateVoicePorts'
+
+        ],
     ];
 
     /**
