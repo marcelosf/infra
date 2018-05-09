@@ -26,8 +26,12 @@ class VoicePortCsvTableSeeder extends Seeder
 
         $handle = $this->handle();
 
+        $line = 1;
+
         while(($data = $this->dumpCsv($handle)) !== false)
         {
+
+            echo $line . "\n";
 
             $voicePort = [
 
@@ -45,13 +49,15 @@ class VoicePortCsvTableSeeder extends Seeder
 
             if (!$this->disconnected($data)) {
 
+                printf("number => %s, voicepanel_id => %s", $voicePort['number'], $voicePort['voicepanel_id']);
+
                 DB::table('voiceports')->where(['voicepanel_id' => $voicePort['voicepanel_id'], 'number' => $voicePort['number']])
                 
                     ->update($voicePort);
 
-                printf("number => %s, voicepanel_id => %s", $voicePort['number'], $voicePort['voicepanel_id']);
-
             }
+
+            $line ++;
 
         }
 
