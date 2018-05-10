@@ -55,7 +55,7 @@ class StackCsvTableSeeder extends Seeder
             'created_at' => now(),
         ];
 
-        $this->stack->firstOrCreate($stack);
+        $this->stack->firstOrCreate(['hostname' => $stack['hostname']], $stack);
 
     }
 

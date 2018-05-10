@@ -2,85 +2,66 @@
 
 namespace Infra\Http\Controllers\Devices;
 
-use Illuminate\Http\Request;
-
 use Infra\Http\Requests;
+use Infra\Http\Requests\Devices\StackCreateRequest;
+use Infra\Http\Requests\Devices\StackUpdateRequest;
+use Infra\Repositories\Devices\StackRepositoryEloquent;
+use Infra\Validators\Devices\StackValidator;
 use Prettus\Validator\Contracts\ValidatorInterface;
 use Prettus\Validator\Exceptions\ValidatorException;
-use Infra\Http\Requests\StackCreateRequest;
-use Infra\Http\Requests\StackUpdateRequest;
-use Infra\Repositories\Devices\StackRepository;
-use Infra\Validators\Devices\StackValidator;
+use Infra\Http\Controllers\Controller;
 
-/**
- * Class StacksController.
- *
- * @package namespace Infra\Http\Controllers\Devices;
- */
+
 class StacksController extends Controller
 {
-    /**
-     * @var StackRepository
-     */
+
     protected $repository;
 
-    /**
-     * @var StackValidator
-     */
+
     protected $validator;
 
-    /**
-     * StacksController constructor.
-     *
-     * @param StackRepository $repository
-     * @param StackValidator $validator
-     */
-    public function __construct(StackRepository $repository, StackValidator $validator)
+
+    public function __construct(StackRepositoryEloquent $repository, StackValidator $validator)
     {
+
         $this->repository = $repository;
+
         $this->validator  = $validator;
+
     }
 
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+
     public function index()
     {
         $this->repository->pushCriteria(app('Prettus\Repository\Criteria\RequestCriteria'));
+
         $stacks = $this->repository->all();
 
         if (request()->wantsJson()) {
 
             return response()->json([
+
                 'data' => $stacks,
             ]);
         }
 
-        return view('stacks.index', compact('stacks'));
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  StackCreateRequest $request
-     *
-     * @return \Illuminate\Http\Response
-     *
-     * @throws \Prettus\Validator\Exceptions\ValidatorException
-     */
+
     public function store(StackCreateRequest $request)
     {
         try {
 
             $this->validator->with($request->all())->passesOrFail(ValidatorInterface::RULE_CREATE);
 
-            $stack = $this->repository->create($request->all());
+            $stack = $this->repository->firstOrCreate(['hostname' => $request->hostname], $request->all());
 
             $response = [
+
                 'message' => 'Stack created.',
+
                 'data'    => $stack->toArray(),
+
             ];
 
             if ($request->wantsJson()) {
@@ -89,16 +70,22 @@ class StacksController extends Controller
             }
 
             return redirect()->back()->with('message', $response['message']);
+
         } catch (ValidatorException $e) {
+
             if ($request->wantsJson()) {
+
                 return response()->json([
+
                     'error'   => true,
+
                     'message' => $e->getMessageBag()
+
                 ]);
             }
 
-            return redirect()->back()->withErrors($e->getMessageBag())->withInput();
         }
+
     }
 
     /**

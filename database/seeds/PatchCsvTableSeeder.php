@@ -62,7 +62,7 @@ class PatchCsvTableSeeder extends Seeder
 
         ];
 
-        $this->patch->firstOrCreate($patch);
+        $this->patch->firstOrCreate(['reference' => $patch['reference']], $patch);
 
     }
 

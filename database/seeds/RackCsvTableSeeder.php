@@ -61,7 +61,7 @@ class RackCsvTableSeeder extends Seeder
             'created_at' => now(),
         ];
 
-        $this->rack->firstOrCreate($rack);
+        $this->rack->firstOrCreate(['name' => $rack['name']], $rack);
 
     }
 

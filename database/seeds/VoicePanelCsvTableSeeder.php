@@ -61,7 +61,7 @@ class VoicePanelCsvTableSeeder extends Seeder
                 'created_at' => now(),
             ];
 
-            $newVoicePanel = $this->voicePanel->firstOrCreate($voice);
+            $newVoicePanel = $this->voicePanel->firstOrCreate(['number' => $voice['number']], $voice);
 
             event(new VoicepanelCreated($newVoicePanel));   
 

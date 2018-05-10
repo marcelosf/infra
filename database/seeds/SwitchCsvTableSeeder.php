@@ -60,11 +60,13 @@ class SwitchCsvTableSeeder extends Seeder
 
             if ($data[7] !== 'NULL' && ($this->rowNotExists($switch))) {
 
-                $newSwitch = $this->switch->firstOrCreate($switch);
+                $newSwitch = $this->switch->firstOrCreate(['hostname' => $switch['hostname']], $switch);
 
                 event(new SwitchCreated($newSwitch));
 
                 echo $switch['hostname'] . " \n";
+
+                $this->rowBuffer[] = $switch;
                 
             }
 

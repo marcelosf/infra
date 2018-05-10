@@ -2,14 +2,15 @@
 
 namespace Infra\Http\Controllers\Devices;
 
+use Infra\Events\SwitchCreated;
+use Infra\Http\Controllers\Controller;
 use Infra\Http\Requests;
-use Infra\Repositories\Devices\SwitchesRepositoryEloquent;
-use Prettus\Validator\Contracts\ValidatorInterface;
-use Prettus\Validator\Exceptions\ValidatorException;
 use Infra\Http\Requests\Devices\SwitchesCreateRequest;
 use Infra\Http\Requests\Devices\SwitchesUpdateRequest;
+use Infra\Repositories\Devices\SwitchesRepositoryEloquent;
 use Infra\Validators\Devices\SwitchesValidator;
-use Infra\Http\Controllers\Controller;
+use Prettus\Validator\Contracts\ValidatorInterface;
+use Prettus\Validator\Exceptions\ValidatorException;
 
 
 class SwitchesController extends Controller
@@ -51,15 +52,7 @@ class SwitchesController extends Controller
         return view('switches.index', compact('switches'));
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  SwitchesCreateRequest $request
-     *
-     * @return \Illuminate\Http\Response
-     *
-     * @throws \Prettus\Validator\Exceptions\ValidatorException
-     */
+
     public function store(SwitchesCreateRequest $request)
     {
         try {
@@ -68,8 +61,16 @@ class SwitchesController extends Controller
 
             $switch = $this->repository->create($request->all());
 
+            if ($switch) {
+
+                event(new SwitchCreated($switch));
+
+            }
+
             $response = [
-                'message' => 'Switches created.',
+
+                'message' => 'Switch created.',
+
                 'data'    => $switch->toArray(),
             ];
 
@@ -78,17 +79,23 @@ class SwitchesController extends Controller
                 return response()->json($response);
             }
 
-            return redirect()->back()->with('message', $response['message']);
+
         } catch (ValidatorException $e) {
+
             if ($request->wantsJson()) {
+
                 return response()->json([
+
                     'error'   => true,
+
                     'message' => $e->getMessageBag()
+
                 ]);
+
             }
 
-            return redirect()->back()->withErrors($e->getMessageBag())->withInput();
         }
+
     }
 
     /**
