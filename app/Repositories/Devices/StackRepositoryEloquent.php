@@ -2,11 +2,10 @@
 
 namespace Infra\Repositories\Devices;
 
-use Prettus\Repository\Eloquent\BaseRepository;
-use Prettus\Repository\Criteria\RequestCriteria;
-use Infra\Repositories\Devices\StackRepository;
 use Infra\Entities\Devices\Stack;
 use Infra\Validators\Devices\StackValidator;
+use Prettus\Repository\Criteria\RequestCriteria;
+use Prettus\Repository\Eloquent\BaseRepository;
 
 /**
  * Class StackRepositoryEloquent.

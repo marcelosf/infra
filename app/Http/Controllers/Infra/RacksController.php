@@ -2,15 +2,15 @@
 
 namespace Infra\Http\Controllers\Infra;
 
-use Illuminate\Http\Request;
-
+use Infra\Http\Controllers\Controller;
 use Infra\Http\Requests;
+use Infra\Http\Requests\Infra\RackCreateRequest;
+use Infra\Http\Requests\Infra\RackUpdateRequest;
+use Infra\Repositories\Infra\RackRepository;
+use Infra\Repositories\Infra\RackRepositoryEloquent;
+use Infra\Validators\Infra\RackValidator;
 use Prettus\Validator\Contracts\ValidatorInterface;
 use Prettus\Validator\Exceptions\ValidatorException;
-use Infra\Http\Requests\RackCreateRequest;
-use Infra\Http\Requests\RackUpdateRequest;
-use Infra\Repositories\Infra\RackRepository;
-use Infra\Validators\Infra\RackValidator;
 
 /**
  * Class RacksController.
@@ -32,10 +32,10 @@ class RacksController extends Controller
     /**
      * RacksController constructor.
      *
-     * @param RackRepository $repository
+     * @param RackRepositoryEloquent $repository
      * @param RackValidator $validator
      */
-    public function __construct(RackRepository $repository, RackValidator $validator)
+    public function __construct(RackRepositoryEloquent $repository, RackValidator $validator)
     {
         $this->repository = $repository;
         $this->validator  = $validator;
@@ -44,17 +44,21 @@ class RacksController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\Http\JsonResponse|\Illuminate\View\View
+     * @throws \Prettus\Repository\Exceptions\RepositoryException
      */
     public function index()
     {
         $this->repository->pushCriteria(app('Prettus\Repository\Criteria\RequestCriteria'));
+
         $racks = $this->repository->all();
 
         if (request()->wantsJson()) {
 
             return response()->json([
+
                 'data' => $racks,
+
             ]);
         }
 
@@ -101,13 +105,7 @@ class RacksController extends Controller
         }
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int $id
-     *
-     * @return \Illuminate\Http\Response
-     */
+
     public function show($id)
     {
         $rack = $this->repository->find($id);

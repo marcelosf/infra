@@ -59,7 +59,7 @@ class SwitchesController extends Controller
 
             $this->validator->with($request->all())->passesOrFail(ValidatorInterface::RULE_CREATE);
 
-            $switch = $this->repository->create($request->all());
+            $switch = $this->repository->skipPresenter()->create($request->all());
 
             if ($switch) {
 

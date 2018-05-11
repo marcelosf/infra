@@ -25,3 +25,5 @@ Route::apiResource('/locale', 'Local\LocalController');
 Route::apiResource('/switch', 'Devices\SwitchesController');
 
 Route::apiResource('/stack', 'Devices\StacksController');
+
+Route::apiResource('/rack', 'Infra\RacksController');

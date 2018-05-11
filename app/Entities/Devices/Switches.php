@@ -20,7 +20,8 @@ class Switches extends Model implements Transformable
         'num_ports',
         'brand',
         'register',
-        'stack'
+        'stack',
+        'stack_id'
 
     ];
 

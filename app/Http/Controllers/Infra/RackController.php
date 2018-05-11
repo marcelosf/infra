@@ -4,6 +4,7 @@ namespace Infra\Http\Controllers\Infra;
 
 use Infra\Model\Infra\Rack;
 use Illuminate\Http\Request;
+use Controller;
 
 
 class RackController extends Controller

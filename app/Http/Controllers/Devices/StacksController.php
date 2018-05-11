@@ -54,7 +54,7 @@ class StacksController extends Controller
 
             $this->validator->with($request->all())->passesOrFail(ValidatorInterface::RULE_CREATE);
 
-            $stack = $this->repository->firstOrCreate(['hostname' => $request->hostname], $request->all());
+            $stack = $this->repository->firstOrCreate($request->all());
 
             $response = [
 

@@ -2,11 +2,10 @@
 
 namespace Infra\Repositories\Infra;
 
-use Prettus\Repository\Eloquent\BaseRepository;
-use Prettus\Repository\Criteria\RequestCriteria;
-use Infra\Repositories\Infra\RackRepository;
 use Infra\Entities\Infra\Rack;
 use Infra\Validators\Infra\RackValidator;
+use Prettus\Repository\Criteria\RequestCriteria;
+use Prettus\Repository\Eloquent\BaseRepository;
 
 /**
  * Class RackRepositoryEloquent.
@@ -15,6 +14,14 @@ use Infra\Validators\Infra\RackValidator;
  */
 class RackRepositoryEloquent extends BaseRepository implements RackRepository
 {
+
+    protected $fieldSearchable = [
+
+        'name',
+        'id'
+
+    ];
+
     /**
      * Specify Model class name
      *
