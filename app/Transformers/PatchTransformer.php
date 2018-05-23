@@ -18,6 +18,7 @@ class PatchTransformer extends TransformerAbstract
 
         return [
 
+            'id'                        => $model->id,
             'build'                     => $model->local->build,
             'floor'                     => $model->local->floor,
             'room'                      => $model->local->local,
@@ -29,7 +30,8 @@ class PatchTransformer extends TransformerAbstract
             'switchPort'                => $model->switchPort ? $model->switchPort->port : '',
             'service'                   => $model->resource,
             'switchVlan'                => $model->switchPort ? $model->switchPort->vlan : '',
-            'rackLocation'              => $model->rack->local->local
+            'rackLocation'              => $model->rack->local->local,
+            'rack_id'                   => $model->rack_id
 
         ];
 

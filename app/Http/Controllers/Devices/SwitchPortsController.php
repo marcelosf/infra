@@ -2,15 +2,14 @@
 
 namespace Infra\Http\Controllers\Devices;
 
-use Illuminate\Http\Request;
-
+use Infra\Http\Controllers\Controller;
 use Infra\Http\Requests;
+use Infra\Http\Requests\Devices\SwitchPortsCreateRequest;
+use Infra\Http\Requests\Devices\SwitchPortsUpdateRequest;
+use Infra\Repositories\Devices\SwitchPortsRepositoryEloquent;
+use Infra\Validators\Devices\SwitchPortsValidator;
 use Prettus\Validator\Contracts\ValidatorInterface;
 use Prettus\Validator\Exceptions\ValidatorException;
-use Infra\Http\Requests\SwitchPortsCreateRequest;
-use Infra\Http\Requests\SwitchPortsUpdateRequest;
-use Infra\Repositories\Devices\SwitchPortsRepository;
-use Infra\Validators\Devices\SwitchPortsValidator;
 
 /**
  * Class SwitchPortsController.
@@ -19,57 +18,43 @@ use Infra\Validators\Devices\SwitchPortsValidator;
  */
 class SwitchPortsController extends Controller
 {
-    /**
-     * @var SwitchPortsRepository
-     */
+
     protected $repository;
 
-    /**
-     * @var SwitchPortsValidator
-     */
     protected $validator;
 
-    /**
-     * SwitchPortsController constructor.
-     *
-     * @param SwitchPortsRepository $repository
-     * @param SwitchPortsValidator $validator
-     */
-    public function __construct(SwitchPortsRepository $repository, SwitchPortsValidator $validator)
+
+    public function __construct(SwitchPortsRepositoryEloquent $repository, SwitchPortsValidator $validator)
     {
+
         $this->repository = $repository;
+
         $this->validator  = $validator;
+
     }
 
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+
     public function index()
     {
+
         $this->repository->pushCriteria(app('Prettus\Repository\Criteria\RequestCriteria'));
+
         $switchPorts = $this->repository->all();
 
         if (request()->wantsJson()) {
 
             return response()->json([
+
                 'data' => $switchPorts,
+
             ]);
         }
 
         return view('switchPorts.index', compact('switchPorts'));
+
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  SwitchPortsCreateRequest $request
-     *
-     * @return \Illuminate\Http\Response
-     *
-     * @throws \Prettus\Validator\Exceptions\ValidatorException
-     */
+
     public function store(SwitchPortsCreateRequest $request)
     {
         try {
@@ -136,18 +121,10 @@ class SwitchPortsController extends Controller
         return view('switchPorts.edit', compact('switchPort'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  SwitchPortsUpdateRequest $request
-     * @param  string            $id
-     *
-     * @return Response
-     *
-     * @throws \Prettus\Validator\Exceptions\ValidatorException
-     */
+
     public function update(SwitchPortsUpdateRequest $request, $id)
     {
+
         try {
 
             $this->validator->with($request->all())->passesOrFail(ValidatorInterface::RULE_UPDATE);
@@ -155,8 +132,8 @@ class SwitchPortsController extends Controller
             $switchPort = $this->repository->update($request->all(), $id);
 
             $response = [
-                'message' => 'SwitchPorts updated.',
-                'data'    => $switchPort->toArray(),
+                'message' => 'Porta do switch atualizada.',
+                'data'    => $switchPort,
             ];
 
             if ($request->wantsJson()) {
@@ -165,6 +142,7 @@ class SwitchPortsController extends Controller
             }
 
             return redirect()->back()->with('message', $response['message']);
+
         } catch (ValidatorException $e) {
 
             if ($request->wantsJson()) {

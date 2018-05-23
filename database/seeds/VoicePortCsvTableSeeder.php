@@ -31,7 +31,7 @@ class VoicePortCsvTableSeeder extends Seeder
         while(($data = $this->dumpCsv($handle)) !== false)
         {
 
-            echo $line . "\n";
+            printf("Line: %s | ", $line);
 
             $voicePort = [
 
@@ -48,8 +48,6 @@ class VoicePortCsvTableSeeder extends Seeder
             ];
 
             if (!$this->disconnected($data)) {
-
-                printf("number => %s, voicepanel_id => %s", $voicePort['number'], $voicePort['voicepanel_id']);
 
                 DB::table('voiceports')->where(['voicepanel_id' => $voicePort['voicepanel_id'], 'number' => $voicePort['number']])
                 
@@ -87,12 +85,16 @@ class VoicePortCsvTableSeeder extends Seeder
     private function getVoicePanelId ($voicepanel)
     {
 
+        printf("voicepanel => %s \n", $voicepanel);
+
         return DB::table('voicepanels')->where('number', '=', $voicepanel)->pluck('id')[0];
 
     }
 
     private function getPpanelId ($data)
     {
+
+        printf("data[3] => %s \n", $data[3]);
 
         return DB::table('ppanel')->where('reference', '=', $data[3])->pluck('id')[0];
 

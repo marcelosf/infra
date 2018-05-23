@@ -27,3 +27,7 @@ Route::apiResource('/switch', 'Devices\SwitchesController');
 Route::apiResource('/stack', 'Devices\StacksController');
 
 Route::apiResource('/rack', 'Infra\RacksController');
+
+Route::apiResource('/switch-port', 'Devices\SwitchPortsController');
+
+Route::apiResource('/patch', 'Infra\PatchController');

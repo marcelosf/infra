@@ -35,10 +35,10 @@ class Switches extends Model implements Transformable
 
     }
 
-    public function stack()
+    public function dstack()
     {
 
-        return $this->belongsTo('Infra\Entities\Devices\Stack');
+        return $this->belongsTo('Infra\Entities\Devices\Stack', 'stack_id');
 
     }
 

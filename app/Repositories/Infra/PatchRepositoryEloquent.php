@@ -18,7 +18,7 @@ class PatchRepositoryEloquent extends BaseRepository implements PatchRepository
 
     protected $fieldSearchable = [
 
-
+        'rack_id',
 
     ];
 

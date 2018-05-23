@@ -2,12 +2,11 @@
 
 namespace Infra\Repositories\Devices;
 
-use Infra\Presenters\SwitchesPresenter;
-use Prettus\Repository\Eloquent\BaseRepository;
-use Prettus\Repository\Criteria\RequestCriteria;
-use Infra\Repositories\Devices\SwitchesRepository;
 use Infra\Entities\Devices\Switches;
+use Infra\Presenters\SwitchesPresenter;
 use Infra\Validators\Devices\SwitchesValidator;
+use Prettus\Repository\Criteria\RequestCriteria;
+use Prettus\Repository\Eloquent\BaseRepository;
 
 /**
  * Class SwitchesRepositoryEloquent.
@@ -16,6 +15,13 @@ use Infra\Validators\Devices\SwitchesValidator;
  */
 class SwitchesRepositoryEloquent extends BaseRepository implements SwitchesRepository
 {
+
+     protected $fieldSearchable = [
+
+         'dstack.rack_id'
+
+     ];
+
     /**
      * Specify Model class name
      *

@@ -18,6 +18,8 @@ class SwitchesTransformer extends TransformerAbstract
 
         return [
 
+            'id' => $model->id,
+
             'ip' => $model->ip,
 
             'num_ports' => $model->num_ports,
@@ -27,6 +29,8 @@ class SwitchesTransformer extends TransformerAbstract
             'name' => $model->hostname,
 
             'stack' => $model->stack,
+
+            'rack_id' => $model->dstack->rack->id,
 
             'numports' => $model->num_ports,
 

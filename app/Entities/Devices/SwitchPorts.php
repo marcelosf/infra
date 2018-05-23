@@ -20,6 +20,7 @@ class SwitchPorts extends Model implements Transformable
         'poe_status',
         'vlan',
         'switch_id',
+        'ppanel_id'
 
     ];
 
@@ -37,7 +38,7 @@ class SwitchPorts extends Model implements Transformable
     public function patch()
     {
 
-        return $this->belongsTo('Infra\Entities\Infra\Patch');
+        return $this->belongsTo('Infra\Entities\Infra\Patch', 'ppanel_id');
 
     }
 

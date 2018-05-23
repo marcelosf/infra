@@ -2,11 +2,11 @@
 
 namespace Infra\Repositories\Devices;
 
-use Prettus\Repository\Eloquent\BaseRepository;
-use Prettus\Repository\Criteria\RequestCriteria;
-use Infra\Repositories\Devices\SwitchPortsRepository;
 use Infra\Entities\Devices\SwitchPorts;
+use Infra\Presenters\SwitchPortPresenter;
 use Infra\Validators\Devices\SwitchPortsValidator;
+use Prettus\Repository\Criteria\RequestCriteria;
+use Prettus\Repository\Eloquent\BaseRepository;
 
 /**
  * Class SwitchPortsRepositoryEloquent.
@@ -15,6 +15,15 @@ use Infra\Validators\Devices\SwitchPortsValidator;
  */
 class SwitchPortsRepositoryEloquent extends BaseRepository implements SwitchPortsRepository
 {
+
+    protected $fieldSearchable = [
+
+        'switch_id',
+        'dswitch.hostname'
+
+    ];
+
+
     /**
      * Specify Model class name
      *
@@ -34,6 +43,14 @@ class SwitchPortsRepositoryEloquent extends BaseRepository implements SwitchPort
     {
 
         return SwitchPortsValidator::class;
+    }
+
+
+    public function presenter()
+    {
+
+        return SwitchPortPresenter::class;
+
     }
 
 

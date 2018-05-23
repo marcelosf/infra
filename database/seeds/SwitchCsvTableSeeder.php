@@ -62,9 +62,13 @@ class SwitchCsvTableSeeder extends Seeder
 
                 $newSwitch = $this->switch->firstOrCreate(['hostname' => $switch['hostname']], $switch);
 
-                event(new SwitchCreated($newSwitch));
+                if ($newSwitch->wasRecentlyCreated) {
 
-                echo $switch['hostname'] . " \n";
+                    event(new SwitchCreated($newSwitch));
+
+                    echo $switch['hostname'] . " \n";
+
+                }
 
                 $this->rowBuffer[] = $switch;
                 
@@ -121,6 +125,8 @@ class SwitchCsvTableSeeder extends Seeder
             DB::statement("SET FOREIGN_KEY_CHECKS=0;");
 
             DB::table('switches')->truncate();
+
+            DB::table('switchports')->truncate();
 
             DB::statement("SET FOREIGN_KEY_CHECKS=1;");
 
