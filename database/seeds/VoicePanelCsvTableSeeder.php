@@ -58,7 +58,6 @@ class VoicePanelCsvTableSeeder extends Seeder
 
                 'rack_id' => $this->getRackId($data[13]),
 
-                'created_at' => now(),
             ];
 
             $newVoicePanel = $this->voicePanel->firstOrCreate(['number' => $voice['number']], $voice);
@@ -71,6 +70,8 @@ class VoicePanelCsvTableSeeder extends Seeder
 
     private function getVoiceNumber ($data)
     {
+
+        print_r($data);
 
         $voicePortNumber = (integer)$data[17];
 
